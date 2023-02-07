@@ -8,17 +8,53 @@ function App() {
   const [showModal, setShowModal] = useState(false);
   const webcamRef = useRef(null);
 
+  const videoWidth = 400;
+  const videoHeight = 400;
+  const centerX = videoWidth / 2;
+  const centerY = videoHeight / 2;
+
+  const [boundaryBox, setBoundaryBox] = useState({
+    x: centerX - 150,
+    y: centerY - 150,
+    width: 300,
+    height: 300,
+    // visibility: false,
+  });
+
   const videoConstraints = {
-    width: 420,
-    height: 420,
+    width: videoWidth,
+    height: videoHeight,
     facingMode: "user",
   };
 
-  const capture = React.useCallback(() => {
+  const capture = React.useCallback(async () => {
     const imageSrc = webcamRef.current.getScreenshot();
-    setImages([...images, imageSrc]);
-    localStorage.setItem("webcamImages", JSON.stringify([...images, imageSrc]));
-    // console.log("clicked");
+    const canvas = document.createElement("canvas");
+    const ctx = canvas.getContext("2d");
+    const image = new Image();
+    image.src = imageSrc;
+    await new Promise((resolve) => (image.onload = resolve));
+    canvas.width = image.width * 0.7;
+    canvas.height = image.height * 0.7;
+    const width70 = image.width * 0.7;
+    const height70 = image.height * 0.7;
+
+    ctx.drawImage(
+      image,
+      (image.width - width70) / 2,
+      (image.height - height70) / 2,
+      width70,
+      height70,
+      0,
+      0,
+      canvas.width,
+      canvas.height
+    );
+    setImages([...images, canvas.toDataURL("image/jpeg")]);
+    localStorage.setItem(
+      "webcamImages",
+      JSON.stringify([...images, canvas.toDataURL("image/jpeg")])
+    );
   }, [webcamRef, images]);
 
   const saveImage = useCallback(() => {
@@ -91,6 +127,16 @@ function App() {
           ref={webcamRef}
           screenshotFormat="image/jpeg"
           videoConstraints={videoConstraints}
+        />
+        <div
+          style={{
+            position: "absolute",
+            top: boundaryBox.y,
+            left: boundaryBox.x,
+            width: boundaryBox.width,
+            height: boundaryBox.height,
+            border: "1px solid red",
+          }}
         />
         <button onClick={capture}>Capture photo</button>
         <button onClick={() => setShowModal(true)}>Save</button>
