@@ -1,6 +1,8 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import Webcam from "react-webcam";
 import Modal from "react-modal";
+import { Button } from "react-bootstrap";
+import "./App.css";
 
 function App() {
   const [img, setImg] = useState(null);
@@ -94,29 +96,33 @@ function App() {
     <div className="Container">
       <Modal isOpen={showModal} onRequestClose={() => setShowModal(false)}>
         <h2>Saved Images</h2>
-        <div>
+        <div className="all_image_container">
           {/* saved image */}
           {images.map((singleImage) => (
-            <div>
+            <div className="single_image_modal">
               <img src={singleImage} alt="Webcam Capture from Local Storage" />
-              <button
-                onClick={() => {
-                  handleDownload(singleImage);
-                }}
-              >
-                Download
-              </button>
-              <button
-                onClick={() => {
-                  deleteImage(singleImage);
-                }}
-              >
-                Delete
-              </button>
+              <div>
+                <Button
+                className="m-3"
+                  onClick={() => {
+                    handleDownload(singleImage);
+                  }}
+                >
+                  Download
+                </Button>
+                <Button
+                  className="delete"
+                  onClick={() => {
+                    deleteImage(singleImage);
+                  }}
+                >
+                  Delete
+                </Button>
+              </div>
             </div>
           ))}
         </div>
-        <button onClick={() => setShowModal(false)}>Close</button>
+        <Button onClick={() => setShowModal(false)} className="close-button">Close</Button>
       </Modal>
       <>
         <Webcam
@@ -138,8 +144,12 @@ function App() {
             border: "1px solid red",
           }}
         />
-        <button onClick={capture}>Capture photo</button>
-        <button onClick={() => setShowModal(true)}>Save</button>
+        <Button className="takePic" onClick={capture}>
+          Capture photo
+        </Button>
+        <Button className="gallery" onClick={() => setShowModal(true)}>
+          gallery
+        </Button>
       </>
     </div>
   );
