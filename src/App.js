@@ -16,7 +16,6 @@ function App() {
   const capture = useCallback(() => {
     const imageSrc = webcamRef.current.getScreenshot();
     setImg(imageSrc);
-    localStorage.setItem("webcamImage", imageSrc);
   }, [webcamRef]);
 
   const saveImage = useCallback(() => {
